@@ -1,0 +1,165 @@
+/* General Body & Background */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #ddd2f3; /* Ungu pastel muda */
+    color: #4b0082;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    min-height: 100vh;
+}
+
+/* Container Card */
+.container {
+    max-width: 480px;
+    margin: 40px auto;
+    background-color: #ffffff; /* Putih */
+    padding: 30px 35px;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(155, 89, 255, 0.35); /* Shadow ungu lembut */
+    color: #4b0082;
+}
+
+/* Headings */
+h1 {
+    font-weight: 600;
+    font-size: 2.4rem;
+    color: #7c3aed;
+    margin-bottom: 10px;
+}
+
+p {
+    font-size: 1.1rem;
+    color: #6b21a8;
+    margin-bottom: 25px;
+}
+
+/* Kamera Icon */
+.camera-icon {
+    font-size: 90px;
+    cursor: pointer;
+    margin: 40px auto;
+    user-select: none;
+    transition: transform 0.4s ease, color 0.3s ease;
+    color: #8a2be2;
+    text-shadow: 0 0 8px #c084fc;
+}
+
+.camera-icon:hover {
+    transform: scale(1.2) rotate(10deg);
+    color: #6b21a8;
+    text-shadow: 0 0 15px #a855f7;
+}
+
+/* Video Wrapper */
+.video-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-top: 20px;
+    max-width: 360px;
+    border-radius: 20px;
+    box-shadow: 0 0 25px #d8b4fe, 0 5px 15px rgba(0,0,0,0.2);
+    background: #fff;
+    border: 3px solid #d8b4fe;
+}
+
+.video-wrapper.hidden {
+    display: none;
+}
+
+/* Video Stream Image */
+#video-stream {
+    display: block;
+    width: 100%;
+    border-radius: 20px;
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #f1eaff;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 26px;
+    color: #6b21a8;
+    transition: background 0.3s ease;
+}
+
+.close-btn:hover {
+    background: #e0d2ff;
+    color: #fff;
+}
+
+/* Prediction Text */
+.prediction-text {
+    margin: 10px auto 8px auto;
+    font-size: 1.3rem;
+    font-weight: 700;
+    min-height: 2rem;
+    color: #7c3aed;
+    user-select: none;
+    background: #f3e8ff;
+    padding: 10px 18px;
+    border-radius: 30px;
+    box-shadow: 0 0 12px #d8b4fe;
+    display: inline-block;
+    min-width: 140px;
+    max-width: 90%;
+    overflow-wrap: break-word;
+    text-align: center;
+}
+
+/* Clear Button */
+.clear-btn {
+    margin-top: 0;
+    background-color: #c084fc;
+    border: none;
+    color: white;
+    padding: 8px 20px;
+    font-size: 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 3px 8px rgba(192, 132, 252, 0.6);
+    display: inline-block;
+    min-width: 110px;
+    text-align: center;
+}
+
+.clear-btn:hover {
+    background-color: #a855f7;
+    box-shadow: 0 5px 12px rgba(168, 85, 247, 0.8);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .container {
+        margin: 10px;
+        padding: 20px;
+    }
+    .camera-icon {
+        font-size: 60px;
+    }
+    .video-wrapper {
+        max-width: 100%;
+        border-radius: 15px;
+    }
+    .prediction-text {
+        font-size: 1.1rem;
+        min-width: auto;
+        padding: 6px 12px;
+    }
+    .clear-btn {
+        font-size: 0.9rem;
+        padding: 6px 14px;
+        min-width: 90px;
+    }
+}

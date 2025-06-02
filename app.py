@@ -8,19 +8,7 @@ import threading
 from flask import Flask, Response, jsonify, render_template, request
 import pygame
 import os
-
-# Inisialisasi pygame mixer sekali saat start app
-pygame.mixer.init()
-
-# Path suara bip, gunakan path absolut atau relatif
-BEEP_PATH = r"E:\! Laskar Ai\CAPSTONE\gesture-link-main\utils\beep.mp3"
-
-def bip():
-    try:
-        sound = pygame.mixer.Sound(BEEP_PATH)
-        sound.play()
-    except Exception as e:
-        print(f"Error mainkan suara bip: {e}")
+from utils.sound import bip
 
 # Load model & label
 model = tf.keras.models.load_model("model/best_model.h5")

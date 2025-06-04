@@ -1,6 +1,6 @@
 # ✋ BISINDO Sign Language Recognition
 
-Proyek ini digunakan untuk merekam dan melatih model klasifikasi gesture Bahasa Isyarat Indonesia (BISINDO) menggunakan landmark tangan dari MediaPipe. Hasil klasifikasi digunakan untuk mendeteksi huruf dan angka A–Z, 0–9.
+Proyek ini digunakan untuk merekam dan melatih model klasifikasi gesture Bahasa Isyarat Indonesia (BISINDO) menggunakan landmark tangan dari MediaPipe. Hasil klasifikasi digunakan untuk mendeteksi huruf dan angka A–Z, 0–10.
 
 ---
 

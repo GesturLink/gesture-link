@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Modul Belajar BISINDO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4e9ff;
+            padding: 2rem;
+        }
+        h1 {
+            color: #7c3aed;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .grid-item {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #eee;
+            text-decoration: none;
+            color: #444;
+            font-weight: bold;
+            position: relative;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+        .grid-item:hover {
+            background-color: #ddd;
+        }
+        .grid-item.done {
+            background-color: #bbf7d0;
+            color: #065f46;
+        }
+        .grid-item.done::after {
+            content: '✔';
+            position: absolute;
+            top: 6px;
+            right: 10px;
+            color: green;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='/'" title="Kembali">×</button>
+        <h1>Modul Belajar BISINDO</h1>
+        <!-- Grid Huruf -->
+        <h3>Huruf</h3>
+        <div class="grid-container">
+            {% for char in all_chars if char.isalpha() %}
+                <a href="{{ url_for('learn_letter', label=char) }}" class="grid-item {% if char in completed %}done{% endif %}">
+                    {{ char }}
+                </a>
+            {% endfor %}
+        </div>
+
+        <!-- Grid Angka -->
+        <h3>Angka</h3>
+        <div class="grid-container">
+            {% for char in all_chars if char.isdigit() %}
+                <a href="{{ url_for('learn_letter', label=char) }}" class="grid-item {% if char in completed %}done{% endif %}">
+                    {{ char }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

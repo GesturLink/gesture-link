@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz BISINDO</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4e9ff;
+            padding: 2rem;
+            text-align: center;
+        }
+        h1 {
+            color: #7c3aed;
+        }
+        .quiz-container {
+            margin: auto;
+            max-width: 500px;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+        .question-label {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #6b21a8;
+        }
+        .progress-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #999;
+        }
+        .camera-icon, .reset-btn, .close-btn {
+            margin-top: 15px;
+        }
+        #videoWrapper {
+            position: relative;
+            display: inline-block;
+            margin-top: 15px;
+        }
+        #video-stream {
+            width: 100%;
+            max-width: 480px;
+            border-radius: 8px;
+        }
+        #predictionChar {
+            margin-top: 15px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        #resultPopup {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            visibility: hidden;
+        }
+        #popupContent {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        #popupContent button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: #7c3aed;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <button class="back-btn" onclick="window.location.href='/'" title="Kembali">×</button>
+        <h1>Quiz BISINDO</h1>
+        <div class="progress-wrapper">
+            <div id="timeLeft">⏱️ 10s</div>
+            <div id="quizProgress">Soal 0/10</div>
+        </div>
+        <div class="question-label" id="quizLabel">-</div>
+
+        <table style="width:100%; border-spacing: 15px 10px;">
+            <tr>
+                <td style="text-align: center;">
+                    <div id="cameraIcon" class="camera-icon" title="Klik untuk mulai kamera">📷</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">
+                    <div id="videoWrapper" class="video-wrapper hidden">
+                        <button id="closeBtn" class="close-btn" title="Hentikan kamera">×</button>
+                        <img id="video-stream" src="" alt="Kamera BISINDO" />
+                        <div id="loadingSpinner" class="hidden">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">
+                    <div id="predictionChar" class="prediction-char hidden"></div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <p id="hint" style="font-size:0.9rem; color:#aaa; margin-top:20px;">
+        Klik ikon kamera untuk mulai, gunakan tangan untuk deteksi.
+    </p>
+
+    <div id="resultPopup">
+        <div id="popupContent">
+            <h2>Skor Anda</h2>
+            <p id="finalScore">0/10</p>
+            <button onclick="location.reload()">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const cameraIcon = document.getElementById('cameraIcon');
+        const videoWrapper = document.getElementById('videoWrapper');
+        const videoStream = document.getElementById('video-stream');
+        const closeBtn = document.getElementById('closeBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const predictionChar = document.getElementById("predictionChar");
+        const quizLabel = document.getElementById("quizLabel");
+        const quizProgress = document.getElementById("quizProgress");
+        const resultPopup = document.getElementById("resultPopup");
+        const finalScore = document.getElementById("finalScore");
+        const timeLeft = document.getElementById("timeLeft");
+
+        let timeoutId = null;
+        let countdownInterval = null;
+        let streaming = false;
+        let predictionInterval;
+        let currentAnswer = "";
+        let predictionLocked = false;
+        let quizStarted = false;
+
+        cameraIcon.addEventListener('click', () => {
+            if (!streaming) {
+                loadingSpinner.classList.remove('hidden');
+                videoStream.src = "{{ url_for('video_learn') }}";
+                videoWrapper.classList.remove('hidden');
+                cameraIcon.style.display = 'none';
+                streaming = true;
+                predictionChar.classList.remove('hidden');
+                predictionChar.textContent = "-";
+                hint.classList.add('hidden');
+                videoStream.onload = () => loadingSpinner.classList.add('hidden');
+                predictionInterval = setInterval(fetchPrediction, 500);
+
+                // TUNDA MULAI QUIZ SELAMA 3 DETIK
+                setTimeout(() => {
+                    startQuiz();
+                }, 2000);
+            }
+        });
+
+        function startQuiz() {
+            quizStarted = true;
+            nextQuestion();
+        }
+
+        async function nextQuestion() {
+            predictionLocked = true;
+            const res = await fetch("{{ url_for('quiz_next') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prediction: currentAnswer })
+            });
+            const data = await res.json();
+
+            if (data.done) {
+                finalScore.textContent = `${data.score}/10`;
+                resultPopup.style.visibility = 'visible';
+                predictionChar.textContent = '-';
+                return;
+            }
+
+            quizLabel.textContent = data.label;
+            quizProgress.textContent = `Soal ${data.index}/10`;
+            predictionChar.textContent = '-';
+            currentAnswer = "";
+
+            clearTimeout(timeoutId);
+            clearInterval(countdownInterval);
+
+            let seconds = 10;
+            timeLeft.textContent = `⏱️ ${seconds}s`;
+            countdownInterval = setInterval(() => {
+                seconds--;
+                timeLeft.textContent = `⏱️ ${seconds}s`;
+                if (seconds <= 0) clearInterval(countdownInterval);
+            }, 1000);
+
+            timeoutId = setTimeout(() => {
+                predictionLocked = true;
+                nextQuestion();
+            }, 10000);
+
+            predictionLocked = false;
+        }
+
+        async function fetchPrediction() {
+            if (predictionLocked || !quizStarted) return;
+            try {
+                const res = await fetch("{{ url_for('get_single_prediction') }}");
+                if (!res.ok) return;
+                const data = await res.json();
+                const pred = data.prediction;
+
+                if (pred && pred !== "-") {
+                    predictionChar.textContent = pred;
+                    currentAnswer = pred;
+
+                    if (pred === quizLabel.textContent) {
+                        predictionLocked = true;
+                        clearTimeout(timeoutId);
+                        clearInterval(countdownInterval);
+                        setTimeout(nextQuestion, 500);
+                    }
+                }
+            } catch (err) {
+                console.error("Prediction error:", err);
+            }
+        }
+    </script>
+</body>
+</html>

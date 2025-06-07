@@ -4,6 +4,7 @@ import tensorflow as tf
 import mediapipe as mp
 from collections import Counter
 import time
+import random
 import threading
 from flask import Flask, Response, jsonify, render_template, request, session, redirect, url_for
 import pygame
@@ -228,6 +229,38 @@ def mark_complete(label):
 @app.route('/get_completed')
 def get_completed():
     return jsonify(session.get('completed', []))
+
+@app.route('/quiz')
+def quiz():
+    quiz_labels = random.sample(getChars(), 10)
+    session['quiz_labels'] = quiz_labels
+    session['quiz_index'] = 0
+    session['quiz_score'] = 0
+    return render_template('quiz.html', label=quiz_labels[0], index=1, total=10)
+
+@app.route('/quiz/next', methods=['POST'])
+def quiz_next():
+    prediction = request.json.get('prediction', '').upper()
+    index = session.get('quiz_index', 0)
+    labels = session.get('quiz_labels', [])
+
+    if not labels or index >= len(labels):
+        return jsonify({'done': True, 'score': session.get('quiz_score', 0)})
+
+    correct = prediction == labels[index]
+    if correct:
+        session['quiz_score'] += 1
+
+    # Selalu bip saat pindah soal
+    bip()
+
+    session['quiz_index'] += 1
+
+    if session['quiz_index'] >= len(labels):
+        return jsonify({'done': True, 'score': session.get('quiz_score', 0)})
+    else:
+        next_label = labels[session['quiz_index']]
+        return jsonify({'done': False, 'label': next_label, 'index': session['quiz_index'] + 1})
 
 def getChars():
     labels_path = 'dataset/labels.txt'

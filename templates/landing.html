@@ -5,97 +5,29 @@
     <title>Gesture Link</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='landing.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="{{ url_for('static', filename='img/logo 1.png') }}" type="image/x-icon">
+
 </head>
 <body>
-<section class="landing">
-    <div class="left">
+<div class="landing-table">
+    <div class="left-cell">
         <h1>GESTURE LINK</h1>
-        <p class="subdesc">Kembangkan kemampuanmu memahami Bahasa Isyarat Indonesia (BISINDO) dengan cara yang <strong>interaktif, unik</strong>, dan <strong>mudah dipahami</strong>.</p>
-        <p class="desc">Gesture Link adalah platform pembelajaran visual yang memanfaatkan teknologi AI untuk mengenali dan mengajarkan isyarat secara langsung melalui gambar. Ideal untuk pemula, siswa inklusi, hingga tenaga pengajar.</p>
-        <button class="cta" onclick="location.href='{{ url_for('index') }}'">Coba Sekarang</button>
-        <button class="cta" onclick="location.href='{{ url_for('learn') }}'">Belajar</button>
-        <button class="cta" onclick="location.href='{{ url_for('quiz') }}'">Quiz</button>
-    </div>
-    <div class="right-deco">
-        <div class="right-content">
-            <div class="slider-container">
-                <div class="slider" id="slider">
-                    <img src="{{ url_for('static', filename='img/4a28d658-45ca-40a8-ae6e-7af79e666448.jpg') }}" class="slide" alt="Slide 1">
-                    <img src="{{ url_for('static', filename='img/3b96c749-4c5e-4493-bc58-e5e9e516d982.jpg') }}" class="slide" alt="Slide 2">
-                    <img src="{{ url_for('static', filename='img/lee junyoung seongje.jpg') }}" class="slide" alt="Slide 3">
-                </div>
-                <div class="dots" id="dots">
-                    <span class="dot active-dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-            </div>
+        <h2 class="subheadline">Menghubungkan Gerakan dengan Bahasa</h2>
+        <p class="subdesc">
+            Kembangkan kemampuanmu memahami Bahasa Isyarat Indonesia (BISINDO) dengan cara yang <strong>interaktif, unik</strong>, dan <strong>mudah dipahami</strong>.
+        </p>
+        <p class="desc">
+            Gesture Link adalah platform pembelajaran visual yang memanfaatkan teknologi AI untuk mengenali dan mengajarkan isyarat secara langsung melalui gambar. Ideal untuk pemula, siswa inklusi, hingga tenaga pengajar.
+        </p>
+        <div class="cta-group">
+            <button class="cta" onclick="location.href='{{ url_for('index') }}'">Coba Sekarang</button>
+            <button class="cta" onclick="location.href='{{ url_for('learn') }}'">Belajar</button>
+            <button class="cta" onclick="location.href='{{ url_for('quiz') }}'">Quiz</button>
         </div>
     </div>
-</section>
-<script>
-    const slider = document.getElementById('slider');
-    const slides = document.querySelectorAll('.slide');
-    const dots = document.querySelectorAll('.dot');
-
-    let currentIndex = 0;
-    let isDragging = false;
-    let startX = 0;
-
-    function updateSlide(index) {
-        slider.style.transform = `translateX(-${index * 100}%)`;
-        dots.forEach(dot => dot.classList.remove('active-dot'));
-        dots[index].classList.add('active-dot');
-    }
-
-    function nextAutoSlide() {
-        currentIndex = (currentIndex + 1) % slides.length;
-        updateSlide(currentIndex);
-    }
-
-    setInterval(nextAutoSlide, 3500);
-
-    slider.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        startX = e.pageX;
-    });
-
-    slider.addEventListener('mouseup', (e) => {
-        if (!isDragging) return;
-        const diff = e.pageX - startX;
-        if (diff > 50) {
-            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-        } else if (diff < -50) {
-            currentIndex = (currentIndex + 1) % slides.length;
-        }
-        updateSlide(currentIndex);
-        isDragging = false;
-    });
-
-    slider.addEventListener('touchstart', (e) => {
-        isDragging = true;
-        startX = e.touches[0].clientX;
-    });
-
-    slider.addEventListener('touchend', (e) => {
-        if (!isDragging) return;
-        const endX = e.changedTouches[0].clientX;
-        const diff = endX - startX;
-        if (diff > 50) {
-            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-        } else if (diff < -50) {
-            currentIndex = (currentIndex + 1) % slides.length;
-        }
-        updateSlide(currentIndex);
-        isDragging = false;
-    });
-
-    dots.forEach((dot, idx) => {
-        dot.addEventListener('click', () => {
-            currentIndex = idx;
-            updateSlide(currentIndex);
-        });
-    });
-</script>
+    <div class="right-cell">
+        <img src="{{ url_for('static', filename='img/landing.png') }}" alt="Gesture Image" class="static-image">
+    </div>
+</div>
 </body>
 </html>

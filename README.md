@@ -1,74 +1,145 @@
-# ✋ BISINDO Sign Language Recognition
+# ✋ Gesture Link
 
-Proyek ini digunakan untuk merekam dan melatih model klasifikasi gesture Bahasa Isyarat Indonesia (BISINDO) menggunakan landmark tangan dari MediaPipe. Hasil klasifikasi digunakan untuk mendeteksi huruf dan angka A–Z, 0–10.
+***Menghubungkan Gerakan dengan Bahasa***
+
+**Gesture Link** adalah aplikasi web interaktif yang mengenali gesture Bahasa Isyarat Indonesia (BISINDO) menggunakan **MediaPipe** dan model klasifikasi berbasis landmark tangan. Aplikasi ini memiliki tiga fitur utama: **Deteksi Kalimat (Coba Sekarang)**, **Belajar Alfabet & Angka BISINDO**, dan **Quiz** untuk menguji kemampuan.
 
 ---
 
-## 🧹 Requirements
+## 📸 Screenshot Aplikasi
 
-Gunakan **Python 3.10.x** untuk kompatibilitas terbaik di Windows dan macOS.
+| Halaman Beranda                  | Halaman Belajar                   | Halaman Quiz                     |
+| -------------------------------- | --------------------------------- | -------------------------------- |
+| ![](static/screenshots/home.png) | ![](static/screenshots/learn.png) | ![](static/screenshots/quiz.png) |
 
-Install dependensi:
+---
+
+## 🚀 Fitur Aplikasi
+
+### 1. **Coba Sekarang**
+
+* Mendeteksi gesture tangan secara real-time dan mengonversi menjadi huruf dan angka.
+* Dapat membentuk **kalimat** dari rangkaian isyarat yang dikenali.
+
+### 2. **Modul Belajar**
+
+* Menyediakan 37 modul (A–Z dan 0–10).
+* Setiap modul menyediakan contoh gesture dan sistem validasi otomatis apakah gesture pengguna sudah benar.
+* Progres disimpan di sesi dan ditandai dengan ✔️.
+
+### 3. **Quiz**
+
+* Berisi 10 soal acak dari huruf dan angka.
+* Waktu menjawab maksimal 10 detik per soal.
+* Skor ditampilkan di akhir quiz.
+
+---
+
+## 🧰 Library yang Digunakan
+
+Berikut adalah daftar pustaka utama dari proses awal hingga deployment web:
+
+| Tahapan                        | Library                                         |
+| ------------------------------ | ----------------------------------------------- |
+| **Perekaman & Ekstraksi Data** | `OpenCV`, `MediaPipe`, `csv`, `os`              |
+| **Pelatihan Model**            | `TensorFlow`, `NumPy`, `Pandas`, `scikit-learn` |
+| **Aplikasi Web**               | `Flask`, `Jinja2`, `Werkzeug`, `HTML/CSS/JS`    |
+| **Suara Notifikasi**           | `pygame.mixer`                                  |
+
+---
+
+## 📁 Struktur Proyek
+
+```
+gesture-link/
+├── dataset/
+│   ├── dataset_landmark_csv/
+│   └── labels.txt
+├── model/
+|   ├── training
+|   |   └── Training_Bisindo_landmark.ipynb
+│   ├── best_model.h5
+│   └── label_classes.npy
+├── static/
+|   ├── img/
+|   ├── img_signs/
+│   ├── style.css
+│   └── landing.css
+├── templates/
+│   ├── index.html
+│   ├── landing.html
+│   ├── learn.html
+│   ├── learn_single.html
+│   └── quiz.html
+├── utils/
+│   ├── beep.mp3
+│   └── sound.py
+├── app.py                # Aplikasi web Flask
+├── collect_landmark_data.py  # Rekam data baru
+├── realtime_prediction.py    # Deteksi real-time lokal
+└── requirements.txt
+```
+
+---
+
+## 💻 Cara Menjalankan Proyek
+
+### 1. Clone dan setup environment
 
 ```bash
+git clone https://github.com/GestureLink/gesture-link.git
+cd gesture-link
 python -m venv venv
-source venv/bin/activate  # atau .\venv\Scripts\activate di Windows
+source venv/bin/activate   # Windows: .\venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
----
+### 2. Menjalankan deteksi lokal (non-web)
 
-## 📦 Struktur Folder Dataset
-
-```
-dataset/
-├── dataset_images/
-│   ├── A/
-│   ├── B/
-│   └── ...
-├── dataset_landmark_csv/
-│   ├── A.csv
-│   ├── B.csv
-│   └── ...
+```bash
+python realtime_prediction.py
 ```
 
+### 3. Menjalankan aplikasi web Flask
+
+```bash
+python app.py
+```
+
+Akses di browser melalui `http://127.0.0.1:5000`.
+
 ---
 
-## 🎥 Menambahkan Data Gesture Baru
+## 🤝 Cara Berkontribusi: Menambahkan Data Baru
 
-Untuk berkontribusi menambahkan data gesture:
-
-1. Jalankan script berikut:
+1. Jalankan:
 
 ```bash
 python collect_landmark_data.py
 ```
 
-2. Masukkan label huruf (contoh: `A`, `B`, `3`, dst)
-3. Masukkan jumlah data yang ingin direkam (misal: `30`)
-4. Sistem akan:
+2. Masukkan:
 
-   * Menunggu tangan terdeteksi
-   * Menampilkan countdown 10 detik
-   * Mulai merekam dan menyimpan ke `dataset/`
+   * Label gesture (contoh: `A`, `B`, `5`)
+   * Jumlah data yang ingin direkam (contoh: `30`)
+3. Sistem akan:
 
-> 🌟 File landmark akan ditambahkan ke `.csv` tanpa menghapus data lama
-> 🖼️ Gambar disimpan otomatis ke folder `dataset_images/{label}/`
+   * Menunggu tangan terdeteksi oleh MediaPipe
+   * Countdown 10 detik
+   * Menyimpan `.csv` dan gambar gesture ke folder `dataset/`
+
+📌 *Data tidak akan menimpa data sebelumnya.*
 
 ---
 
-## 🛠 Kolaborasi GitHub
-
-Jika kamu pertama kali clone:
-
-```bash
-git clone https://github.com/GesturLink/gesture-link.git
-cd gesture-link
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-## 🧠 Kontributor
+## 👨‍💻 Kontributor
 
 * @LAI25-SS040
+* Auliya
+* Cindy 
+* Rozaq
+* Verzha
+
+---
+
+Jika kamu memiliki saran, fitur baru, atau ingin membantu memperluas dataset BISINDO — **jangan ragu untuk fork dan pull request!** 🙌

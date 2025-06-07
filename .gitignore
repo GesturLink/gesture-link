@@ -1,13 +1,4 @@
 # .gitignore
 
-# Hindari file gambar besar
-*.jpg
-*.jpeg
-*.png
-
 # Hindari dataset
 dataset/
-
-# Hindari model berat
-*.h5
-*.tflite

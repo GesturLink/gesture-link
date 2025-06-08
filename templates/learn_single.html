@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <title>Belajar huruf/angka {{ label }}</title>
+
+    <!-- Google Fonts Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <div class="container">
+        <!-- Tombol kembali ke landing -->
+        <button class="back-btn" onclick="window.location.href='/learn'" title="Kembali">×</button>
+
+        <h1 style="color: #7c3aed;">Belajar huruf/angka {{ label }}</h1>
+        <p style="color: #6b21a8;">Deteksi Gerakan Bahasa Isyarat BISINDO<br>(Alfabet & Angka)</p>
+        <p style="font-size:0.9rem; color:#aaa;">Lakukan gerakan tangan sesuai contoh di atas. Sistem akan memberi tahu jika benar.</p>
+
+        <table style="width:100%; border-spacing: 15px 10px;">
+            <tr>
+                <td style="text-align: center;">
+                    <div class="sign-example">
+                    <img src="{{ url_for('static', filename='img_signs/' + label + '.jpg') }}" alt="Contoh {{ label }}">
+                </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">
+                    <!-- Kamera Icon -->
+                    <div id="cameraIcon" class="camera-icon" title="Klik untuk mulai kamera">📷</div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">
+                    <!-- Video Area -->
+                    <div id="videoWrapper" class="video-wrapper hidden">
+                        <button id="closeBtn" class="close-btn" title="Hentikan kamera">×</button>
+                        <img id="video-stream" src="" alt="Kamera BISINDO" />
+                        <div id="loadingSpinner" class="hidden">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">
+                    <!-- Prediction Char -->
+                    <div id="predictionChar" class="prediction-char hidden"></div>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center;">
+                    <!-- Reset Button -->
+                    <button id="resetBtn" class="reset-btn hidden" title="Ulangi prediksi">Ulangi</button>
+                </td>
+            </tr>
+        </table>
+        <p id="hint" style="font-size:0.9rem; color:#aaa; margin-top:20px;">
+            Klik ikon kamera untuk mulai, gunakan tangan untuk deteksi,<br>tekan "Clear Text" untuk reset hasil.
+        </p>
+    </div>
+
+<script>
+    const label = '{{ label }}'.toUpperCase();
+    const cameraIcon = document.getElementById('cameraIcon');
+    const videoWrapper = document.getElementById('videoWrapper');
+    const videoStream = document.getElementById('video-stream');
+    const closeBtn = document.getElementById('closeBtn');
+    const predictionChar = document.getElementById('predictionChar');
+    const resetBtn = document.getElementById('resetBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const hint = document.getElementById('hint');
+
+    let streaming = false;
+    let predictionInterval;
+    let correctShown = false;
+    let lastCorrectTime = null;
+    let confirmed = false;
+
+    cameraIcon.addEventListener('click', () => {
+        if (!streaming) {
+            loadingSpinner.classList.remove('hidden');
+            videoStream.src = "{{ url_for('video_learn') }}";
+            videoWrapper.classList.remove('hidden');
+            cameraIcon.style.display = 'none';
+            streaming = true;
+            predictionChar.classList.remove('hidden');
+            predictionChar.textContent = "-";
+            hint.classList.add('hidden');
+            videoStream.onload = () => loadingSpinner.classList.add('hidden');
+            fetchPrediction();
+            predictionInterval = setInterval(fetchPrediction, 500);
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        predictionChar.textContent = "-";
+        predictionChar.style.backgroundColor = '#f3f3f3';
+        predictionChar.style.color = '#000';
+        resetBtn.classList.add('hidden');
+        lastCorrectTime = null;
+        correctShown = false;
+        confirmed = false;
+    });
+
+    async function fetchPrediction() {
+        if (confirmed) return;
+        try {
+            const res = await fetch("{{ url_for('get_single_prediction') }}");
+            if (!res.ok) return;
+            const data = await res.json();
+            const pred = (data.prediction || "-").toUpperCase();
+
+            if (pred === label) {
+                if (!lastCorrectTime) {
+                    lastCorrectTime = Date.now();
+                    predictionChar.textContent = '⏳';
+                    predictionChar.style.backgroundColor = '#fef9c3';
+                    predictionChar.style.color = '#92400e';
+                } else if (Date.now() - lastCorrectTime >= 2000 && !correctShown) {
+                    predictionChar.textContent = "BENAR";
+                    predictionChar.style.backgroundColor = "#bbf7d0";
+                    predictionChar.style.color = "#065f46";
+                    correctShown = true;
+                    confirmed = true;
+                    resetBtn.classList.remove("hidden");
+                    await fetch(`/mark_complete/${label}`, { method: 'POST' });
+                }
+            } else {
+                predictionChar.textContent = pred || "-";
+                predictionChar.style.backgroundColor = "#f3f3f3";
+                predictionChar.style.color = "#000";
+                lastCorrectTime = null;
+                correctShown = false;
+            }
+        } catch (err) {
+            predictionChar.textContent = "Gagal mengambil prediksi";
+        }
+    }
+</script>
+
+</body>
+</html>

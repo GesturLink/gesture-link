@@ -11,11 +11,9 @@ import pygame
 import os
 from utils.sound import bip
 
-# Load model & label
 model = tf.keras.models.load_model("model/best_model.h5")
 label_classes = np.load("model/label_classes.npy")
 
-# MediaPipe Hands init
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(max_num_hands=2, min_detection_confidence=0.7)
 mp_drawing = mp.solutions.drawing_utils
@@ -23,7 +21,6 @@ mp_drawing = mp.solutions.drawing_utils
 app = Flask(__name__)
 app.secret_key = 'gesturelink-secret-key'
 
-# Shared variables
 current_text = ""
 prediction_buffer = []
 last_capture_time = time.time()
@@ -236,31 +233,37 @@ def quiz():
     session['quiz_labels'] = quiz_labels
     session['quiz_index'] = 0
     session['quiz_score'] = 0
-    return render_template('quiz.html', label=quiz_labels[0], index=1, total=10)
+    return render_template('quiz.html')
 
 @app.route('/quiz/next', methods=['POST'])
 def quiz_next():
-    prediction = request.json.get('prediction', '').upper()
+    prediction = request.json.get('prediction')
     index = session.get('quiz_index', 0)
     labels = session.get('quiz_labels', [])
+    score = session.get('quiz_score', 0)
 
     if not labels or index >= len(labels):
-        return jsonify({'done': True, 'score': session.get('quiz_score', 0)})
+        return jsonify({'done': True, 'score': score})
 
-    correct = prediction == labels[index]
-    if correct:
-        session['quiz_score'] += 1
+    if prediction is None:
+        return jsonify({'done': False, 'label': labels[index], 'index': index + 1})
 
-    # Selalu bip saat pindah soal
+    prediction = prediction.upper()
+
+    if prediction:
+        if prediction == labels[index]:
+            score += 1
+        session['quiz_score'] = score
+
     bip()
 
-    session['quiz_index'] += 1
+    session['quiz_index'] = index + 1
+    index += 1
 
-    if session['quiz_index'] >= len(labels):
-        return jsonify({'done': True, 'score': session.get('quiz_score', 0)})
-    else:
-        next_label = labels[session['quiz_index']]
-        return jsonify({'done': False, 'label': next_label, 'index': session['quiz_index'] + 1})
+    if index >= len(labels):
+        return jsonify({'done': True, 'score': score})
+
+    return jsonify({'done': False, 'label': labels[index], 'index': index + 1})
 
 def getChars():
     labels_path = 'dataset/labels.txt'

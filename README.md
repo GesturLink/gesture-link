@@ -8,10 +8,14 @@
 
 ## 📸 Screenshot Aplikasi
 
-| Halaman Beranda                  | Halaman Belajar                   | Halaman Quiz                     |
-| -------------------------------- | --------------------------------- | -------------------------------- |
-| ![](static/screenshots/home.png) | ![](static/screenshots/learn.png) | ![](static/screenshots/quiz.png) |
+| Halaman Beranda                  | Halaman Coba Sekarang             | 
+| -------------------------------- | --------------------------------- | 
+| ![VideoCapture_20250609-084415](https://github.com/user-attachments/assets/ac41a8ee-f21b-457b-8429-7422c74566cb) | ![VideoCapture_20250609-084608](https://github.com/user-attachments/assets/48f2f955-0c2a-4a75-bd2a-874feece15bb)| 
 
+| Halaman Belajar                  | Halaman Quiz                     |
+| -------------------------------- | -------------------------------- |
+| ![VideoCapture_20250609-084429](https://github.com/user-attachments/assets/629782c9-47d6-457d-afbc-caf1e3b19da2) | ![VideoCapture_20250609-084555](https://github.com/user-attachments/assets/8a07008f-bcea-437c-bd19-53c17016147a) |
+| ![VideoCapture_20250609-084445](https://github.com/user-attachments/assets/41741e23-3a14-4f17-9247-a18210a894a4) |  |
 ---
 
 ## 🚀 Fitur Aplikasi
